@@ -1,61 +1,44 @@
-
+<?
+	session_start();
+?>
 <DOCTYPE html>
 <html>
-
 <body>
 <?
+	$show_captcha = 1;
 	if(array_key_exists('submit', $_POST)){
 		submit();
 	}
 	function submit(){
 		$value =  $_POST['answer'];
 
-		if ($value == file_get_contents("buff.txt")){
+		if ($value == $_SESSION["answer"]){
+			$show_captcha = 0;
 			echo '100 баллов';
+			echo "<a href='next.html'><p>далее</p></a>";
 		}
 		else {
-			echo 'бот';
+			echo 'А не бот ли ты?';
 		}
 	}
-	putenv('GDFONTPATH=' . realpath('.'));
-	$im = imagecreatetruecolor(150, 25);
-	$font = imageloadfont('./teletext.gdf');
-	$font2 = imageloadfont('./latin.gdf');
-	$font3 = imageloadfont('./nsw.gdf');
-	$font4 = imageloadfont('./fbold.gdf');
-	$farr = array($font, $font2, $font3, $font4);
-	$bg = imagecolorallocate($im,200,255,200);
-	imagefilledrectangle($im, 0, 0, 200, 50, $bg);
+	if ($show_captcha){
+		$ans = "";
+		for ($i = 0; $i < 6; $i++){
+			$buf = chr(rand(65, 90));
+			$ans .= $buf;
+		}
 
-	$ans = "";
-	for ($i = 0; $i < 6; $i++){
-		$buf = chr(rand(65, 90));
-		$ans .= $buf;
-		$r = rand(0, 100);
-		$g = rand(0, 100);
-		$b = rand(0, 100);
-		$bg1 = imagecolorallocate($im, $r, $g, $b);
-		imagestring($im, $farr[rand(0, 3)], $i * 10 + 20, rand(0, 10),  $buf, $bg1);
+
+		$_SESSION['answer'] = $ans;
+
 	}
-
-	file_put_contents("buff.txt", $ans);
-
-
-
-	imagepng($im, "buff.png");
-	imagedestroy($im);
-
-
-	echo "<img src=buff.png width='400px' height='100px'>";
-
-
-
-
 
 ?>
 <form method="post">
+<img src='getim.php' width='400px' height='100px'>
+<br>
 <input type="text" id="check" name="answer"  value="введите итоговое изложение">
 <input type="submit" name="submit" class="button" value="написал"></a>
 </form>
-</	body>
+</body>
 </html>
